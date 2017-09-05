@@ -1,3 +1,4 @@
+import java.io.File;
 import java.util.ArrayList;
 
 public class ServerInfoList {
@@ -10,6 +11,8 @@ public class ServerInfoList {
 
     public void initialiseFromFile(String filename) {
         // implement your code here
+    	File file = new File(filename);
+    	
     }
 
     public ArrayList<ServerInfo> getServerInfos() {
@@ -22,16 +25,18 @@ public class ServerInfoList {
 
     public boolean addServerInfo(ServerInfo newServerInfo) { 
         // implement your code here
-    	return false;
+    	return serverInfos.add(newServerInfo);
     }
 
     public boolean updateServerInfo(int index, ServerInfo newServerInfo) { 
         // implement your code here
+    	serverInfos.set(index, newServerInfo);
     	return false;
     }
     
     public boolean removeServerInfo(int index) { 
         // implement your code here
+    	serverInfos.remove(index);
     	return false;
     }
 

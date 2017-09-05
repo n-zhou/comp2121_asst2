@@ -56,6 +56,6 @@ public class BlockchainServerRunnable implements Runnable{
     	}
     }
     
-    public void reallyClose(Socket socket){try{socket.close();}catch(Exception e){}}
     // implement any helper method here if you need any
+    public void reallyClose(Socket socket){try{socket.close();}catch(Exception e){}}
 }
