@@ -35,24 +35,16 @@ public class BlockchainServerRunnable implements Runnable{
     	PrintWriter pw = new PrintWriter(os, true);
     	String line;
     	while((line = br.readLine()) != null){
- 
-			if(line.equals("cc")){
+			if(line.equals("cc"))
 				return;
-			}
-			if(line.equals("pb")){
-				synchronized(blockchain){
-					pw.println(blockchain.toString());
-				}
-			}
+			if(line.equals("pb"))
+				pw.println(blockchain.toString());
 			else {
-				synchronized(blockchain){
-					if(blockchain.addTransaction(line))
-						pw.println("Accepted\n");
-					else
-						pw.println("Rejected\n");
-				}
+				if(blockchain.addTransaction(line))
+					pw.println("Accepted\n");
+				else
+					pw.println("Rejected\n");
 			}
-		
     	}
     }
     

@@ -36,7 +36,7 @@ public class ServerInfoList {
     
     public boolean removeServerInfo(int index) { 
         // implement your code here
-    	serverInfos.remove(index);
+    	serverInfos.set(index, null);
     	return false;
     }
 
