@@ -4,7 +4,7 @@ import java.net.Socket;
 
 public class BlockchainServer {
 
-    public static void main(String[] args) throws InterruptedException, IOException {
+    public static void main(String[] args) {
 
         if (args.length != 1) {
             return;
@@ -17,27 +17,33 @@ public class BlockchainServer {
         PeriodicCommitRunnable pcr = new PeriodicCommitRunnable(blockchain);
         Thread pct = new Thread(pcr);
         pct.start();
-
-        // implement your code her
-        ServerSocket server = new ServerSocket(portNumber);
         
+        // implement your code her
+        ServerSocket server = null;
         try {
+        	server = new ServerSocket(portNumber);
         	 while(true){
-             	Socket socket = server.accept();
-             	new Thread(new BlockchainServerRunnable(socket, blockchain)).start();
-             }
-        } 
-        catch(Exception e) {
-        	
+              	Socket socket = server.accept();
+              	new Thread(new BlockchainServerRunnable(socket, blockchain)).start();
+              }
+        }
+        catch (Exception e) {
+        	System.err.println(e);
         }
         finally {
-        	server.close();
+        	reallyClose(server);
         	pcr.setRunning(false);
-            pct.join();
+            //pct.join();
         }
         
         
     }
+    
+    public static void reallyClose(ServerSocket s) {
+    	try {s.close();}catch(Exception e) {}
+    }
+    
+    
 
     // implement any helper method here if you need any
 }

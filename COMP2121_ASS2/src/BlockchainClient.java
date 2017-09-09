@@ -14,15 +14,24 @@ public class BlockchainClient {
         pl.initialiseFromFile(configFileName);
 
         Scanner sc = new Scanner(System.in);
-
+        BlockchainClient bcc = new BlockchainClient();
         while (true) {
             String message = sc.nextLine();
             // implement your code here
+            if(message.equals("sd"))
+            	return;
+            if(message.equals("ls"))
+            	System.out.println(pl.toString());
+            else if(message.equals("pb"))
+            	bcc.broadcast(pl, message);
+            String[] split = message.split("[|]");
+            
         }
     }
 
     public void unicast (int serverNumber, ServerInfo p, String message) {
         // implement your code here
+    	
     }
 
     public void broadcast (ServerInfoList pl, String message) {

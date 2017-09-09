@@ -1,5 +1,7 @@
 import java.io.File;
 import java.util.ArrayList;
+import java.util.ListIterator;
+import java.util.Scanner;
 
 public class ServerInfoList {
 
@@ -11,7 +13,62 @@ public class ServerInfoList {
 
     public void initialiseFromFile(String filename) {
         // implement your code here
-    	File file = new File(filename);
+    	try {
+    		Scanner sc = new Scanner(new File(filename));
+    		int num_servers = 0;
+    		int l = 0;
+    		for(int i = 0; sc.hasNextLine(); i++) {
+    			String[] line = sc.nextLine().split("[=]");
+    			if(line[0].equals("servers.num")) {
+    				l = i;
+    				num_servers = Integer.parseInt(line[1]);
+    				
+    			}
+    		}
+    		sc.close();
+    		sc = new Scanner(new File(filename));
+    		for(int i = 0; i <= l; ++i)
+    			sc.nextLine();
+    		
+    		String key = null;
+    		String last_host = null;
+    		Integer port = null;
+    		while(sc.hasNextLine()) {
+    			String line = sc.nextLine();
+    			String[] split = line.split("[.=]");
+    			if(split.length != 3)
+    				continue;
+    			if(key == null)
+    				key = split[0];
+    			else if(!key.equals(split[0])) {
+    				if(last_host == null || port == null)
+    					addServerInfo(null);
+    				else {
+    					if(serverInfos.size() < 3)
+    						addServerInfo(new ServerInfo(last_host, port));
+    				}
+    					
+    				key = split[0];
+    				last_host = null;
+    				port = null;
+    			}
+    			switch(split[1]) {
+    				case "host":
+    					last_host = split[2];
+    					break;
+    				case "port":
+    					port = Integer.parseInt(split[2]);
+    					if(!(port.intValue() >= 1024 && port.intValue() <= 65535))
+    						port = null;
+    					break;
+    			}
+    				
+    		}
+    	}
+    	catch(Exception e) {
+    		System.err.println(e);
+    	}
+    	
     	
     }
 
@@ -42,6 +99,10 @@ public class ServerInfoList {
 
     public boolean clearServerInfo() { 
         // implement your code here
+    	ListIterator it = serverInfos.listIterator();
+    	while(it.hasNext()) 
+    		if(it.next() == null)
+    			it.remove();
     	return false;
     }
 
