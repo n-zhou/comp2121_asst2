@@ -20,7 +20,8 @@ public class SeverInfoListTest {
 			if(si == null)
 				continue;
 			else 
-				System.out.printf("%s: %s\n", si.getHost(), si.getPort());;
+				System.out.printf("%s: %s\n", si.getHost(), si.getPort());
+		System.out.println(server.toString());
 		assertEquals(3, list.size());
 		assertNull(list.get(0));
 		assertNull(list.get(1));

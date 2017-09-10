@@ -15,7 +15,7 @@ public class ServerInfoList {
         // implement your code here
     	try {
     		Scanner sc = new Scanner(new File(filename));
-    		int num_servers = 0;
+    		int num_servers = Integer.MAX_VALUE;
     		int l = 0;
     		for(int i = 0; sc.hasNextLine(); i++) {
     			String[] line = sc.nextLine().split("[=]");
@@ -42,9 +42,9 @@ public class ServerInfoList {
     				key = split[0];
     			else if(!key.equals(split[0])) {
     				if(last_host == null || port == null)
-    					addServerInfo(null);
+    					serverInfos.add(null);
     				else {
-    					if(serverInfos.size() < 3)
+    					if(serverInfos.size() < num_servers)
     						addServerInfo(new ServerInfo(last_host, port));
     				}
     					
@@ -58,7 +58,7 @@ public class ServerInfoList {
     					break;
     				case "port":
     					port = Integer.parseInt(split[2]);
-    					if(!(port.intValue() >= 1024 && port.intValue() <= 65535))
+    					if(port.intValue() < 1024 || port.intValue() > 65535)
     						port = null;
     					break;
     			}
@@ -82,28 +82,37 @@ public class ServerInfoList {
 
     public boolean addServerInfo(ServerInfo newServerInfo) { 
         // implement your code here
+    	if(!validServer(newServerInfo))
+    		return false;
     	return serverInfos.add(newServerInfo);
     }
 
     public boolean updateServerInfo(int index, ServerInfo newServerInfo) { 
         // implement your code here
+    	if(index >= serverInfos.size() || index < 0 || !validServer(newServerInfo))
+    		return false;
     	serverInfos.set(index, newServerInfo);
-    	return false;
+    	return true;
     }
     
     public boolean removeServerInfo(int index) { 
         // implement your code here
+    	if(index >= serverInfos.size() || index < 0)
+    		return false;
     	serverInfos.set(index, null);
-    	return false;
+    	return true;
     }
 
     public boolean clearServerInfo() { 
         // implement your code here
     	ListIterator it = serverInfos.listIterator();
+    	boolean ret = false;
     	while(it.hasNext()) 
-    		if(it.next() == null)
+    		if(it.next() == null) {
     			it.remove();
-    	return false;
+    			ret = true;
+    		}
+    	return ret;
     }
 
     public String toString() {
@@ -117,4 +126,13 @@ public class ServerInfoList {
     }
 
     // implement any helper method here if you need any
+    public boolean validServer(ServerInfo server) {
+    	if(server == null)
+    		return false;
+    	if(server.getPort() < 1024 || server.getPort() > 65535)
+    		return false;
+    	if(server.getHost() == null)
+    		return false;
+		return true;
+    }
 }
