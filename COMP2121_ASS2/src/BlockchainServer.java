@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class BlockchainServer {
 
@@ -9,11 +10,13 @@ public class BlockchainServer {
         if (args.length != 1) {
             return;
         }
-
+        Scanner sc = new Scanner(args[0]);
+        if(!sc.hasNextInt())
+        	return;
         int portNumber = Integer.parseInt(args[0]);
         Blockchain blockchain = new Blockchain();
 
-
+        
         PeriodicCommitRunnable pcr = new PeriodicCommitRunnable(blockchain);
         Thread pct = new Thread(pcr);
         pct.start();
