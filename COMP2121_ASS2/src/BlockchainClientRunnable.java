@@ -13,7 +13,7 @@ public class BlockchainClientRunnable implements Runnable {
     private String message;
     
     public BlockchainClientRunnable(int serverNumber, String serverName, int portNumber, String message) {
-        this.reply = "Server" + serverNumber + ": " + serverName + " " + portNumber + "\n"; // header string
+        this.reply = "Server" + serverNumber + ": " + serverName + " " + portNumber; // header string
         this.serverNumber = serverNumber;
         this.serverName = serverName;
         this.portNumber = portNumber;
@@ -22,7 +22,6 @@ public class BlockchainClientRunnable implements Runnable {
 
     public void run() {
         // implement your code here
-
     	try {
     		Socket socket = new Socket(serverName, portNumber);
     		socket.setSoTimeout(2000);
@@ -34,17 +33,18 @@ public class BlockchainClientRunnable implements Runnable {
         		pw.println(message);
         	String line;
         	while((line = br.readLine()) != null) {
-        		reply += String.format("%s\n", line);
+        		reply += String.format("\n%s", line);
+        		if(!br.ready())
+        			break;
         	}
         	pw.println("cc");
-        	System.out.println("ready");
         	socket.close();
     	}
     	catch(java.net.ConnectException e) {
-    		reply += "Server is not available\n";
+    		reply += "\nServer is not available\n";
     	}
     	catch (Exception e) {
-    		//System.err.println(e);
+    		System.err.println(e);
     	}
     	
     	

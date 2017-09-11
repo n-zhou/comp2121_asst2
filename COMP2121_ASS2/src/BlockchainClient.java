@@ -80,7 +80,7 @@ public class BlockchainClient {
     		BlockchainClientRunnable bccr = new BlockchainClientRunnable(serverNumber, p.getHost(), p.getPort(), message);
         	Thread t = new Thread(bccr);
         	t.start();
-        	t.join(2000);
+        	t.join(2100);
         	System.out.println(bccr.getReply());
     	}
     	catch(Exception e) {
@@ -101,11 +101,10 @@ public class BlockchainClient {
         			threads.add(new Thread(objects.getLast()));
         			threads.getLast().start();
         		}
-        	Thread.sleep(2000);
-        	for(Thread t : threads)
-        		t.join();
-        	for(BlockchainClientRunnable bccr : objects)
-        		System.out.println(bccr.getReply());
+    		for(int i = 0; i < threads.size(); ++i) {
+	    		threads.get(i).join();
+	    		System.out.println(objects.get(i).getReply());
+	    	}
     	}
     	catch(Exception e) {
     		System.err.println(e);
@@ -115,14 +114,29 @@ public class BlockchainClient {
 
     public void multicast (ServerInfoList serverInfoList, ArrayList<Integer> serverIndices, String message) {
         // implement your code here
-    	List<ServerInfo> list = serverInfoList.getServerInfos();
-    	for(int index : serverIndices) {
-    		if(index < 0 || index >= list.size())
-    			continue;
-    		if(list.get(index) != null) {
-    			new Thread(new BlockchainClientRunnable(index, list.get(index).getHost(), list.get(index).getPort(), message)).start();
-    		}
+    	try {
+	    	List<ServerInfo> list = serverInfoList.getServerInfos();
+	    	
+	    	LinkedList<BlockchainClientRunnable> runnables = new LinkedList<>();
+	    	LinkedList<Thread> threads = new LinkedList<>();
+	    	for(int index : serverIndices) {
+	    		if(index < 0 || index >= list.size())
+	    			continue;
+	    		if(list.get(index) != null) {
+	    			runnables.add(new BlockchainClientRunnable(index, list.get(index).getHost(), list.get(index).getPort(), message));
+	    			threads.add(new Thread(runnables.getLast()));
+	    			threads.getLast().start();
+	    		}
+	    	}
+	    	for(int i = 0; i < threads.size(); ++i) {
+	    		threads.get(i).join();
+	    		System.out.println(runnables.get(i).getReply());
+	    	}
     	}
+    	catch(Exception e) {
+    		
+    	}
+    	
     }
 
     // implement any helper method here if you need any
