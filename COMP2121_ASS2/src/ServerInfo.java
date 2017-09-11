@@ -3,6 +3,8 @@ public class ServerInfo {
     private String host;
     private int port;
 
+    public ServerInfo() {}
+    
     public ServerInfo(String host, int port) {
         this.host = host;
         this.port = port;
@@ -21,6 +23,11 @@ public class ServerInfo {
 
     public void setPort(int port) {
         this.port = port;
+    }
+    
+    public static boolean validServerInfo(ServerInfo server) {
+    	
+    	return true;
     }
 
     // implement any helper method here if you need any

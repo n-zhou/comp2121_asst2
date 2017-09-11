@@ -49,6 +49,8 @@ public class BlockchainClient {
             	case "pb":
             		if(split.length == 1)
             			bcc.broadcast(pl, message);
+            		else if(split.length == 2)
+            			bcc.unicast(Integer.parseInt(split[1]), pl.getServerInfos().get(Integer.parseInt(split[1])), message);
             		else {
             			ArrayList<Integer> indices = new ArrayList<>();
             			for(int i = 1; i < split.length; ++i)
@@ -72,7 +74,8 @@ public class BlockchainClient {
     		BlockchainClientRunnable bccr = new BlockchainClientRunnable(serverNumber, p.getHost(), p.getPort(), message);
         	Thread t = new Thread(bccr);
         	t.start();
-        	t.join(2000);
+        	t.join();
+        	System.out.println(bccr.getReply());
     	}
     	catch(Exception e) {
     		e.getMessage();
@@ -81,26 +84,32 @@ public class BlockchainClient {
     	
     }
 
-    public void broadcast (ServerInfoList pl, String message) {
+    @SuppressWarnings("deprecation")
+	public void broadcast (ServerInfoList pl, String message) {
         // implement your code here
     	LinkedList<Thread> threads = new LinkedList<>();
     	LinkedList<BlockchainClientRunnable> objects = new LinkedList<>();
-    	for(int i = 0; i < pl.getServerInfos().size(); ++i)
-    		if(pl.getServerInfos().get(i) != null) {
-    			objects.add(new BlockchainClientRunnable(i, pl.getServerInfos().get(i).getHost(), pl.getServerInfos().get(i).getPort(), message));
-    			threads.add(new Thread(objects.getLast()));
-    			threads.getLast().start();
-    		}
     	try {
-    		for(int i = 0; i < threads.size(); ++i)
-        		if(i != 0)
-        			threads.get(i).join(1);
-        		else
-        			threads.get(i).join(1800);
+    		for(int i = 0; i < pl.getServerInfos().size(); ++i)
+        		if(pl.getServerInfos().get(i) != null) {
+        			objects.add(new BlockchainClientRunnable(i, pl.getServerInfos().get(i).getHost(), pl.getServerInfos().get(i).getPort(), message));
+        			threads.add(new Thread(objects.getLast()));
+        			threads.getLast().start();
+        		}
+        	Thread.sleep(2000);
+        	for(int i = 0; i < threads.size(); i++) {
+        		if(!threads.get(i).isAlive())
+        			System.out.println(objects.get(i).getReply());
+        		else {
+        			System.out.println("Server is not available\n");
+        			threads.get(i).stop();
+        		}
+        	}
     	}
-    	catch (Exception e) {
+    	catch(Exception e) {
     		System.err.println(e);
     	}
+    	
     }
 
     public void multicast (ServerInfoList serverInfoList, ArrayList<Integer> serverIndices, String message) {

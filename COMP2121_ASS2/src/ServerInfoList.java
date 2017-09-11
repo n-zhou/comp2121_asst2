@@ -1,7 +1,9 @@
 import java.io.File;
+
 import java.util.ArrayList;
 import java.util.ListIterator;
 import java.util.Scanner;
+import java.util.HashMap;
 
 public class ServerInfoList {
 
@@ -13,6 +15,7 @@ public class ServerInfoList {
 
     public void initialiseFromFile(String filename) {
         // implement your code here
+    	HashMap<String, ServerInfo> key_sets = new HashMap<>(); 
     	try {
     		Scanner sc = new Scanner(new File(filename));
     		int num_servers = Integer.MAX_VALUE;
@@ -27,43 +30,27 @@ public class ServerInfoList {
     		}
     		sc.close();
     		sc = new Scanner(new File(filename));
-    		for(int i = 0; i <= l; ++i)
-    			sc.nextLine();
-    		
     		String key = null;
     		String last_host = null;
     		Integer port = null;
     		while(sc.hasNextLine()) {
     			String line = sc.nextLine();
     			String[] split = line.split("[.=]");
-    			if(split.length != 3)
+    			if(split.length != 3 || line.startsWith("servers.num"))
     				continue;
-    			if(key == null)
-    				key = split[0];
-    			else if(!key.equals(split[0])) {
-    				if(last_host == null || port == null)
-    					serverInfos.add(null);
-    				else {
-    					if(serverInfos.size() < num_servers)
-    						addServerInfo(new ServerInfo(last_host, port));
-    				}
-    					
-    				key = split[0];
-    				last_host = null;
-    				port = null;
-    			}
+    			if(!key_sets.containsKey(split[0]))
+    				key_sets.put(split[0], new ServerInfo());
     			switch(split[1]) {
     				case "host":
-    					last_host = split[2];
+    					key_sets.get(split[0]).setHost(split[2]);
     					break;
     				case "port":
-    					port = Integer.parseInt(split[2]);
-    					if(port.intValue() < 1024 || port.intValue() > 65535)
-    						port = null;
+    					key_sets.get(split[0]).setPort(new Integer(split[2]));
     					break;
     			}
-    				
     		}
+    		for(String s : key_sets.keySet())
+    			;
     	}
     	catch(Exception e) {
     		System.err.println(e);

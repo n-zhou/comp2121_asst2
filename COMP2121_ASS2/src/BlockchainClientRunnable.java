@@ -40,8 +40,7 @@ public class BlockchainClientRunnable implements Runnable {
     	}
     	catch (Exception e) {
     		//System.err.println(e);
-    		System.out.println("Server is not available\n");
-    		
+    		while(true);
     	}
     	
     	
