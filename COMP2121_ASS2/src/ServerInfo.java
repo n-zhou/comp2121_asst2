@@ -26,7 +26,10 @@ public class ServerInfo {
     }
     
     public static boolean validServerInfo(ServerInfo server) {
-    	
+    	if(server.port < 1024|| server.port > 65535)
+    		return false;
+    	if(server.host == null)
+    		return false;
     	return true;
     }
 

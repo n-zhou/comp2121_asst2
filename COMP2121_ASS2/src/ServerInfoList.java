@@ -18,21 +18,16 @@ public class ServerInfoList {
     	HashMap<String, ServerInfo> key_sets = new HashMap<>(); 
     	try {
     		Scanner sc = new Scanner(new File(filename));
-    		int num_servers = Integer.MAX_VALUE;
-    		int l = 0;
-    		for(int i = 0; sc.hasNextLine(); i++) {
-    			String[] line = sc.nextLine().split("[=]");
-    			if(line[0].equals("servers.num")) {
-    				l = i;
-    				num_servers = Integer.parseInt(line[1]);
-    				
-    			}
+    		int servers_num = -1;
+    		while(sc.hasNextLine()) {
+    			String line = sc.nextLine();
+    			if(line.startsWith("servers.num"))
+    				servers_num = Integer.parseInt(line.split("[=]")[1]);
     		}
     		sc.close();
+    		if(servers_num == -1)
+    			return;
     		sc = new Scanner(new File(filename));
-    		String key = null;
-    		String last_host = null;
-    		Integer port = null;
     		while(sc.hasNextLine()) {
     			String line = sc.nextLine();
     			String[] split = line.split("[.=]");
@@ -41,16 +36,26 @@ public class ServerInfoList {
     			if(!key_sets.containsKey(split[0]))
     				key_sets.put(split[0], new ServerInfo());
     			switch(split[1]) {
-    				case "host":
+    				case "host":	
     					key_sets.get(split[0]).setHost(split[2]);
     					break;
     				case "port":
-    					key_sets.get(split[0]).setPort(new Integer(split[2]));
+    					key_sets.get(split[0]).setPort(Integer.parseInt(split[2]));
     					break;
     			}
     		}
-    		for(String s : key_sets.keySet())
-    			;
+    		ArrayList<ServerInfo> poo = new ArrayList<>();
+    		for(int i = 0; i < servers_num; ++i)
+    			poo.add(null);
+    		for(String s : key_sets.keySet()) {
+    			String in = s.replaceAll("[^0-9]", "");
+    			int index = Integer.parseInt(in);
+    			if(index >= servers_num)
+    				continue;
+    			if(ServerInfo.validServerInfo(key_sets.get(s)))
+    				poo.set(index, key_sets.get(s));
+    		}
+    		setServerInfos(poo);
     	}
     	catch(Exception e) {
     		System.err.println(e);
