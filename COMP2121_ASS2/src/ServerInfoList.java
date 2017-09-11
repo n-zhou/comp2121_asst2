@@ -97,7 +97,7 @@ public class ServerInfoList {
 
     public boolean clearServerInfo() { 
         // implement your code here
-    	ListIterator it = serverInfos.listIterator();
+    	ListIterator<ServerInfo> it = serverInfos.listIterator();
     	boolean ret = false;
     	while(it.hasNext()) 
     		if(it.next() == null) {

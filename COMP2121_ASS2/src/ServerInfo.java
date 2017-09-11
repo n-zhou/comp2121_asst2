@@ -30,6 +30,8 @@ public class ServerInfo {
     		return false;
     	if(server.host == null)
     		return false;
+    	if(server.host.isEmpty())
+    		return false;
     	return true;
     }
 

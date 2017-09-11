@@ -43,6 +43,12 @@ public class BlockchainClient {
             		else
             			System.out.println("Failed\n");
             		break;
+            	case "cl":
+            		if(pl.clearServerInfo())
+            			System.out.println("Succeeded\n");
+            		else
+            			System.out.println("Failed\n");
+            		break;
             	case "tx":
             		bcc.broadcast(pl, message);
             		break;
@@ -74,7 +80,7 @@ public class BlockchainClient {
     		BlockchainClientRunnable bccr = new BlockchainClientRunnable(serverNumber, p.getHost(), p.getPort(), message);
         	Thread t = new Thread(bccr);
         	t.start();
-        	t.join();
+        	t.join(2000);
         	System.out.println(bccr.getReply());
     	}
     	catch(Exception e) {
@@ -84,7 +90,6 @@ public class BlockchainClient {
     	
     }
 
-    @SuppressWarnings("deprecation")
 	public void broadcast (ServerInfoList pl, String message) {
         // implement your code here
     	LinkedList<Thread> threads = new LinkedList<>();
@@ -97,14 +102,10 @@ public class BlockchainClient {
         			threads.getLast().start();
         		}
         	Thread.sleep(2000);
-        	for(int i = 0; i < threads.size(); i++) {
-        		if(!threads.get(i).isAlive())
-        			System.out.println(objects.get(i).getReply());
-        		else {
-        			System.out.println("Server is not available\n");
-        			threads.get(i).stop();
-        		}
-        	}
+        	for(Thread t : threads)
+        		t.join();
+        	for(BlockchainClientRunnable bccr : objects)
+        		System.out.println(bccr.getReply());
     	}
     	catch(Exception e) {
     		System.err.println(e);

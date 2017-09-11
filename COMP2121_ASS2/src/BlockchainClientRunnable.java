@@ -22,6 +22,7 @@ public class BlockchainClientRunnable implements Runnable {
 
     public void run() {
         // implement your code here
+
     	try {
     		Socket socket = new Socket(serverName, portNumber);
     		socket.setSoTimeout(2000);
@@ -36,11 +37,14 @@ public class BlockchainClientRunnable implements Runnable {
         		reply += String.format("%s\n", line);
         	}
         	pw.println("cc");
+        	System.out.println("ready");
         	socket.close();
+    	}
+    	catch(java.net.ConnectException e) {
+    		reply += "Server is not available\n";
     	}
     	catch (Exception e) {
     		//System.err.println(e);
-    		while(true);
     	}
     	
     	
