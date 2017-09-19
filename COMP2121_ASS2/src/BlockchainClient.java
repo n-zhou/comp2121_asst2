@@ -17,7 +17,7 @@ public class BlockchainClient {
 
         Scanner sc = new Scanner(System.in);
         BlockchainClient bcc = new BlockchainClient();
-        while (true) {
+        while (sc.hasNextLine()) {
             String message = sc.nextLine();
             // implement your code here
             String[] split = message.split("[|]");
@@ -26,19 +26,31 @@ public class BlockchainClient {
             		System.out.println(pl.toString());
             		break;
             	case "ad":
-            		if(pl.addServerInfo(new ServerInfo(split[1], Integer.parseInt(split[2]))))
+            		if(split.length != 3)
+            			System.out.println("Failed\n");
+            		else if(!isValidInt(split[2]))
+            			System.out.println("Failed\n");
+            		else if(pl.addServerInfo(new ServerInfo(split[1], Integer.parseInt(split[2]))))
             			System.out.println("Succeeded\n");
             		else
             			System.out.println("Failed\n");
             		break;
             	case "rm":
-            		if(pl.removeServerInfo(Integer.parseInt(split[1])))
+            		if(split.length != 2)
+            			System.out.println("Failed\n");
+            		else if(!isValidInt(split[1]))
+            			System.out.println("Failed\n");
+            		else if(pl.removeServerInfo(Integer.parseInt(split[1])))
             			System.out.println("Succeeded\n");
             		else
             			System.out.println("Failed\n");
             		break;
             	case "up":
-            		if(pl.updateServerInfo(Integer.parseInt(split[1]), new ServerInfo(split[2], Integer.parseInt(split[3]))))
+            		if(split.length != 4)
+            			System.out.println("Failed\n");
+            		else if(!isValidInt(split[1]) || !isValidInt(split[3]))
+            			System.out.println("Failed\n");
+            		else if(pl.updateServerInfo(Integer.parseInt(split[1]), new ServerInfo(split[2], Integer.parseInt(split[3]))))
             			System.out.println("Succeeded\n");
             		else
             			System.out.println("Failed\n");
@@ -55,12 +67,27 @@ public class BlockchainClient {
             	case "pb":
             		if(split.length == 1)
             			bcc.broadcast(pl, message);
-            		else if(split.length == 2)
-            			bcc.unicast(Integer.parseInt(split[1]), pl.getServerInfos().get(Integer.parseInt(split[1])), message);
+            		else if(split.length == 2) {
+            			if(!isValidInt(split[1]))
+            				System.out.println("Invalid index");
+            			else if(Integer.parseInt(split[1]) >= pl.getServerInfos().size() || Integer.parseInt(split[1]) < 0)
+            				System.out.println("Invalid index");
+            			else {
+            				System.out.println(split[1]);
+            				System.out.println(pl.getServerInfos().size());
+            				bcc.unicast(Integer.parseInt(split[1]), pl.getServerInfos().get(Integer.parseInt(split[1])), message);       
+            			}
+            				
+            				
+            		}
+            			
             		else {
             			ArrayList<Integer> indices = new ArrayList<>();
-            			for(int i = 1; i < split.length; ++i)
-            				indices.add(Integer.parseInt(split[i]));
+            			for(int i = 1; i < split.length; ++i) {
+            				if(isValidInt(split[1]))
+            					indices.add(Integer.parseInt(split[i]));
+            			}
+            				
             			bcc.multicast(pl, indices, message);
             		}   		
             		break;
@@ -137,6 +164,16 @@ public class BlockchainClient {
     		
     	}
     	
+    }
+    
+    public static boolean isValidInt(String s) {
+    	try {
+    		Integer.parseInt(s);
+    		return true;
+    	}
+    	catch(Exception e) {
+    		return false;
+    	}
     }
 
     // implement any helper method here if you need any

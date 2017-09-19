@@ -12,7 +12,7 @@ public class WhiteBoxTestCases {
 	@Test
 	public void test_client() {
 		BlockchainClient.main(new String[] {});
-		InputStream og =  System.in;
+		//InputStream og =  System.in;
 		
 		try {
 			final FileInputStream file = new FileInputStream(new File("TestClientFile"));
@@ -23,7 +23,7 @@ public class WhiteBoxTestCases {
 		
 		
 		
-		System.setIn(og);
+		//System.setIn(og);
 	}
 	
 	@Test
