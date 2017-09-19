@@ -1,5 +1,5 @@
 import java.io.File;
-
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.ListIterator;
 import java.util.Scanner;
@@ -21,17 +21,18 @@ public class ServerInfoList {
     		int servers_num = -1;
     		while(sc.hasNextLine()) {
     			String line = sc.nextLine();
-    			if(line.startsWith("servers.num"))
-    				servers_num = Integer.parseInt(line.split("[=]")[1]);
+    			if(line.startsWith("servers.num") && line.split("[=]").length == 2)
+    					if(validInt(line.split("[=]")[1]))
+    						servers_num = Integer.parseInt(line.split("[=]")[1]);
     		}
     		sc.close();
-    		if(servers_num == -1)
+    		if(servers_num <= 0)
     			return;
     		sc = new Scanner(new File(filename));
     		while(sc.hasNextLine()) {
     			String line = sc.nextLine();
-    			String[] split = line.split("[.=]");
-    			if(split.length != 3 || line.startsWith("servers.num"))
+    			String[] split = line.split("[.=]", 3);
+    			if(split.length < 3 || line.startsWith("servers.num"))
     				continue;
     			if(!key_sets.containsKey(split[0]))
     				key_sets.put(split[0], new ServerInfo());
@@ -40,7 +41,8 @@ public class ServerInfoList {
     					key_sets.get(split[0]).setHost(split[2]);
     					break;
     				case "port":
-    					key_sets.get(split[0]).setPort(Integer.parseInt(split[2]));
+    					if(validInt(split[2]))
+    						key_sets.get(split[0]).setPort(Integer.parseInt(split[2]));
     					break;
     			}
     		}
@@ -48,7 +50,11 @@ public class ServerInfoList {
     		for(int i = 0; i < servers_num; ++i)
     			poo.add(null);
     		for(String s : key_sets.keySet()) {
+    			if(!s.startsWith("server"))
+    				continue;
     			String in = s.replaceAll("[^0-9]", "");
+    			if(!validInt(in))
+    				continue;
     			int index = Integer.parseInt(in);
     			if(index >= servers_num)
     				continue;
@@ -56,6 +62,9 @@ public class ServerInfoList {
     				poo.set(index, key_sets.get(s));
     		}
     		setServerInfos(poo);
+    	}
+    	catch(FileNotFoundException e) {
+    		System.out.println("Server List could not be initialized");
     	}
     	catch(Exception e) {
     		System.err.println(e);
@@ -127,4 +136,14 @@ public class ServerInfoList {
     		return false;
 		return true;
     }
+
+	public boolean validInt(String s) {
+		try {
+			Integer.parseInt(s);
+			return true;
+		}
+		catch(NumberFormatException e) {
+			return false;
+		}
+	}
 }

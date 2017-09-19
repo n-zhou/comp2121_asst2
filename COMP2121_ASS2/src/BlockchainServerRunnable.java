@@ -20,6 +20,7 @@ public class BlockchainServerRunnable implements Runnable{
     public void run() {
         // implement your code here
     	try {
+    		clientSocket.setSoTimeout(2000);
     		handler(clientSocket.getInputStream(), clientSocket.getOutputStream());
     	}
     	catch (Exception e) {
@@ -31,21 +32,27 @@ public class BlockchainServerRunnable implements Runnable{
     }
     
     public void handler(InputStream is, OutputStream os) throws IOException {
-    	BufferedReader br = new BufferedReader(new InputStreamReader(is));
-    	PrintWriter pw = new PrintWriter(os, true);
-    	String line;
-    	while((line = br.readLine()) != null){
-			if(line.equals("cc"))
-				return;
-			if(line.equals("pb"))
-				pw.println(blockchain.toString());
-			else {
-				if(blockchain.addTransaction(line))
-					pw.println("Accepted\n");
-				else
-					pw.println("Rejected\n");
-			}
+    	try {
+	    	BufferedReader br = new BufferedReader(new InputStreamReader(is));
+	    	PrintWriter pw = new PrintWriter(os, true);
+	    	String line;
+	    	while((line = br.readLine()) != null){
+				if(line.equals("cc"))
+					return;
+				if(line.equals("pb"))
+					pw.println(blockchain.toString());
+				else {
+					if(blockchain.addTransaction(line))
+						pw.println("Accepted\n");
+					else
+						pw.println("Rejected\n");
+				}
+	    	}
     	}
+    	catch(java.net.SocketTimeoutException e) {
+    		return;
+    	}
+    	catch(Exception e) {}
     }
     
     // implement any helper method here if you need any
