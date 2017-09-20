@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.Scanner;
 
 public class BlockchainClientRunnable implements Runnable {
@@ -41,6 +42,9 @@ public class BlockchainClientRunnable implements Runnable {
         	socket.close();
     	}
     	catch(java.net.ConnectException e) {
+    		reply += "\nServer is not available\n";
+    	}
+    	catch(UnknownHostException e) {
     		reply += "\nServer is not available\n";
     	}
     	catch (Exception e) {

@@ -101,14 +101,21 @@ public class BlockchainClient {
         }
     }
 
-    public void unicast (int serverNumber, ServerInfo p, String message) {
+    @SuppressWarnings("deprecation")
+	public void unicast (int serverNumber, ServerInfo p, String message) {
         // implement your code here
     	try {
     		BlockchainClientRunnable bccr = new BlockchainClientRunnable(serverNumber, p.getHost(), p.getPort(), message);
         	Thread t = new Thread(bccr);
         	t.start();
         	t.join(2100);
-        	System.out.println(bccr.getReply());
+        	if(!t.isAlive())
+        		System.out.println(bccr.getReply());
+        	else {
+        		System.out.println("Server Not Available\n");
+        		t.stop();
+        	}
+        		
     	}
     	catch(Exception e) {
     		e.getMessage();
